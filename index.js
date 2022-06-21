@@ -1,10 +1,11 @@
+const PATH_FILE = './talker.json';
 const express = require('express');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const { readContentFile } = require('./utils');
-// const { isValidToken } = require('./middlewares/validTolken');
-
-const PATH_FILE = './talker.json';
+// Validações:
+const { isValidPassword } = require('./middlewares/isValidPassword');
+const { isValidEmail } = require('./middlewares/isValidEmail');
 
 const app = express();
 app.use(bodyParser.json());
@@ -39,8 +40,8 @@ app.get('/talker/:id', async (req, res) => {
 });
 
 // 3 - Crie o endpoint POST /login
-app.post('/login', (_req, res) => {
+// 4 - Adicione as validações para o endpoint /login
+app.post('/login', isValidEmail, isValidPassword, (_req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
-  console.log(token);
   res.status(200).json({ token });
 });
