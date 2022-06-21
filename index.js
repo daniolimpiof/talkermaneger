@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const crypto = require('crypto');
 const { readContentFile } = require('./utils');
+// const { isValidToken } = require('./middlewares/validTolken');
 
 const PATH_FILE = './talker.json';
 
@@ -19,14 +21,14 @@ app.listen(PORT, () => {
   console.log('Online');
 });
 
-// requisição GET para /talker
+// 1 - Crie o endpoint GET /talker
 app.get('/talker', async (_req, res) => {
   const talkers = await readContentFile(PATH_FILE);
   res.status(200).json(talkers);
  // console.log('Req 1: GET /talker');
 });
 
-// requisição GET para /talker/:id
+// 2 - Crie o endpoint GET /talker/:id
 app.get('/talker/:id', async (req, res) => {
   const { id } = req.params;
   const talker = await readContentFile(PATH_FILE);
@@ -34,4 +36,11 @@ app.get('/talker/:id', async (req, res) => {
   if (!talkerInfo) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 
   res.status(200).json(talkerInfo);
+});
+
+// 3 - Crie o endpoint POST /login
+app.post('/login', (_req, res) => {
+  const token = crypto.randomBytes(8).toString('hex');
+  console.log(token);
+  res.status(200).json({ token });
 });
