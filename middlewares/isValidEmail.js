@@ -1,5 +1,6 @@
 const isValidEmail = (req, res, next) => {
     const { email } = req.body;
+    // Ajuda de Danillo Gonçalves para trocar o regex
     const emailRegex = /\S+@\S+.\S+/;
     const validEmail = emailRegex.test(email);
     

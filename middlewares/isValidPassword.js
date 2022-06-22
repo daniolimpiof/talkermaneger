@@ -1,6 +1,6 @@
 const isValidPassword = (req, res, next) => {
     const { password } = req.body;
-  
+      // Ajuda de Gabriel Pesch: estava retornando errado.
     if (!password) {
         return res.status(400).json({ message: 'O campo "password" é obrigatório' });
       }

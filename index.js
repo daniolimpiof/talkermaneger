@@ -4,8 +4,8 @@ const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const { readContentFile, writeContentFile } = require('./utils');
 // Validações:
-const { isValidPassword } = require('./middlewares/isValidPassword');
 const { isValidEmail } = require('./middlewares/isValidEmail');
+const { isValidPassword } = require('./middlewares/isValidPassword');
 const { isValidToken } = require('./middlewares/isValidTolken');
 const { isValidName } = require('./middlewares/isValidName');
 const { isValidAge } = require('./middlewares/isValidAge');
@@ -71,5 +71,28 @@ app.post(
     talkers.push(newTalker);
   writeContentFile(PATH_FILE, newTalker);
   return res.status(201).json(newTalker);
+  },
+);
+
+// 6 - Crie o endpoint PUT /talker/:id
+app.put(
+  '/talker/:id', 
+  isValidToken,
+  isValidName,
+  isValidAge,
+  isValidTalk,
+  isValidWatchedAt,
+  isValidRate,
+  async (req, res) => {
+    const { id } = req.params;
+    const { name, age, talk } = req.body;
+    const talkers = await readContentFile(PATH_FILE);
+    const talkerIndex = talkers.findIndex((index) => Number(index.id) === Number(id));
+    const upDateTalker = { id: Number(id), name, age, talk };
+    talkers[talkerIndex] = upDateTalker;
+    await writeContentFile(PATH_FILE, upDateTalker);
+    // console.log(talk);
+    // console.log(talkers);
+   return res.status(200).json(upDateTalker);
   },
 );
