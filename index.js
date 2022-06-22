@@ -25,7 +25,7 @@ app.listen(PORT, () => {
 // 1 - Crie o endpoint GET /talker
 app.get('/talker', async (_req, res) => {
   const talkers = await readContentFile(PATH_FILE);
-  res.status(200).json(talkers);
+  return res.status(200).json(talkers);
  // console.log('Req 1: GET /talker');
 });
 
@@ -36,12 +36,13 @@ app.get('/talker/:id', async (req, res) => {
   const talkerInfo = talker.find((idNumb) => idNumb.id === Number(id));
   if (!talkerInfo) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 
-  res.status(200).json(talkerInfo);
+  return res.status(200).json(talkerInfo);
 });
 
 // 3 - Crie o endpoint POST /login
 // 4 - Adicione as validações para o endpoint /login
 app.post('/login', isValidEmail, isValidPassword, (_req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
-  res.status(200).json({ token });
+  console.log(isValidEmail);
+  return res.status(200).json({ token });
 });
