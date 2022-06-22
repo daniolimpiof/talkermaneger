@@ -2,10 +2,16 @@ const PATH_FILE = './talker.json';
 const express = require('express');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
-const { readContentFile } = require('./utils');
+const { readContentFile, writeContentFile } = require('./utils');
 // Validações:
 const { isValidPassword } = require('./middlewares/isValidPassword');
 const { isValidEmail } = require('./middlewares/isValidEmail');
+const { isValidToken } = require('./middlewares/isValidTolken');
+const { isValidName } = require('./middlewares/isValidName');
+const { isValidAge } = require('./middlewares/isValidAge');
+const { isValidTalk } = require('./middlewares/isValidTalk');
+const { isValidWatchedAt } = require('./middlewares/isValidWatchedAt');
+const { isValidRate } = require('./middlewares/isValidRate');
 
 const app = express();
 app.use(bodyParser.json());
@@ -46,3 +52,24 @@ app.post('/login', isValidEmail, isValidPassword, (_req, res) => {
   console.log(isValidEmail);
   return res.status(200).json({ token });
 });
+
+// 5 - Crie o endpoint POST /talker
+// Recebi ajuda de Pedro Vieira Lopes para fazer o push corretamente, pois estava duplicando a info.
+app.post(
+  '/talker',
+  isValidToken,
+  isValidName,
+  isValidAge,
+  isValidTalk,
+  isValidWatchedAt,
+  isValidRate,
+  async (req, res) => {
+    const { name, age, talk } = req.body;
+    const talkers = await readContentFile(PATH_FILE);
+    const newTalker = { id: talkers.length + 1, name, age, talk };
+    // console.log(talkers);
+    talkers.push(newTalker);
+  writeContentFile(PATH_FILE, newTalker);
+  return res.status(201).json(newTalker);
+  },
+);

@@ -9,7 +9,21 @@ const readContentFile = async (path) => {
   }
 };
 
+const writeContentFile = async (path, content) => {
+  try {
+    const allContent = await readContentFile(path);
+
+  allContent.push(content);
+  fs.writeFile(path, JSON.stringify(allContent));
+
+    return content;
+  } catch (error) {
+    console.log(error.message);
+    return null;
+  }
+};
+
 module.exports = {
   readContentFile,
-  // writeContentFile,
+  writeContentFile,
 };
