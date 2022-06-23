@@ -108,12 +108,12 @@ app.delete(
   async (req, res) => {
     const { id } = req.params;
     const talkers = await readContentFile(PATH_FILE);
-    const forDelete = talkers.filter((index) => index.id !== Number(id));
+    const forDelete = talkers.findIndex((index) => index.id === Number(id));
   
     talkers.splice(forDelete, 1);
-    writeContentFile(PATH_FILE);
-    console.log(forDelete);
-   return res.status(204).end();
+    await writeContentFile(PATH_FILE);
+    return res.status(204).end();
+    // console.log(forDelete);
   },
 );
 
