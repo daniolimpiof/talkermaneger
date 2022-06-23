@@ -24,11 +24,15 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
-app.listen(PORT, () => {
-  console.log('Online');
+//  Crie o endpoint GET /talker/search?q=searchTerm
+app.get('/talker/search', isValidToken, async (req, res) => {
+  const { q } = req.query;
+  const talker = await readContentFile(PATH_FILE);
+  const findTaker = talker.filter(({ name }) => name.includes(q));
+  return res.status(200).json(findTaker);
 });
 
-// 2 - Crie o endpoint GET /talker/:id
+// Crie o endpoint GET /talker/:id
 app.get('/talker/:id', async (req, res) => {
   const { id } = req.params;
   const talker = await readContentFile(PATH_FILE);
@@ -38,22 +42,22 @@ app.get('/talker/:id', async (req, res) => {
   return res.status(200).json(talkerInfo);
 });
 
-// 1 - Crie o endpoint GET /talker
+//  Crie o endpoint GET /talker
 app.get('/talker', async (_req, res) => {
   const talkers = await readContentFile(PATH_FILE);
   return res.status(200).json(talkers);
  // console.log('Req 1: GET /talker');
 });
 
-// 3 - Crie o endpoint POST /login
-// 4 - Adicione as validações para o endpoint /login
+// Crie o endpoint POST /login
+// Adicione as validações para o endpoint /login
 app.post('/login', isValidEmail, isValidPassword, (_req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
   console.log(isValidEmail);
   return res.status(200).json({ token });
 });
 
-// 5 - Crie o endpoint POST /talker
+// Crie o endpoint POST /talker
 // Recebi ajuda de Pedro Vieira Lopes para fazer o push corretamente, pois estava duplicando a info.
 app.post(
   '/talker',
@@ -74,7 +78,7 @@ app.post(
   },
 );
 
-// 6 - Crie o endpoint PUT /talker/:id
+// Crie o endpoint PUT /talker/:id
 app.put(
   '/talker/:id', 
   isValidToken,
@@ -97,21 +101,22 @@ app.put(
   },
 );
 
-// 7 - Crie o endpoint DELETE /talker/:id
+// Crie o endpoint DELETE /talker/:id
 app.delete(
   '/talker/:id', 
   isValidToken,
   async (req, res) => {
     const { id } = req.params;
     const talkers = await readContentFile(PATH_FILE);
-    const talkerIndex = talkers.findIndex((index) => Number(index.id) === Number(id));
-    if (talkerIndex === -1) {
- return res.status(404)
-    .json({ message: 'Pessoa palestrante não encontrada!' }); 
-}
-    talkers.splice(talkerIndex, 1);
-    await writeContentFile(PATH_FILE, talkers);
-    
+    const forDelete = talkers.filter((index) => index.id !== Number(id));
+  
+    talkers.splice(forDelete, 1);
+    writeContentFile(PATH_FILE);
+    console.log(forDelete);
    return res.status(204).end();
   },
 );
+
+app.listen(PORT, () => {
+  console.log('Online');
+});
