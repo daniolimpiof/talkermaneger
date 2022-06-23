@@ -28,13 +28,6 @@ app.listen(PORT, () => {
   console.log('Online');
 });
 
-// 1 - Crie o endpoint GET /talker
-app.get('/talker', async (_req, res) => {
-  const talkers = await readContentFile(PATH_FILE);
-  return res.status(200).json(talkers);
- // console.log('Req 1: GET /talker');
-});
-
 // 2 - Crie o endpoint GET /talker/:id
 app.get('/talker/:id', async (req, res) => {
   const { id } = req.params;
@@ -43,6 +36,13 @@ app.get('/talker/:id', async (req, res) => {
   if (!talkerInfo) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 
   return res.status(200).json(talkerInfo);
+});
+
+// 1 - Crie o endpoint GET /talker
+app.get('/talker', async (_req, res) => {
+  const talkers = await readContentFile(PATH_FILE);
+  return res.status(200).json(talkers);
+ // console.log('Req 1: GET /talker');
 });
 
 // 3 - Crie o endpoint POST /login
@@ -94,5 +94,24 @@ app.put(
     // console.log(talk);
     // console.log(talkers);
    return res.status(200).json(upDateTalker);
+  },
+);
+
+// 7 - Crie o endpoint DELETE /talker/:id
+app.delete(
+  '/talker/:id', 
+  isValidToken,
+  async (req, res) => {
+    const { id } = req.params;
+    const talkers = await readContentFile(PATH_FILE);
+    const talkerIndex = talkers.findIndex((index) => Number(index.id) === Number(id));
+    if (talkerIndex === -1) {
+ return res.status(404)
+    .json({ message: 'Pessoa palestrante não encontrada!' }); 
+}
+    talkers.splice(talkerIndex, 1);
+    await writeContentFile(PATH_FILE, talkers);
+    
+   return res.status(204).end();
   },
 );
