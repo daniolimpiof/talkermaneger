@@ -2,6 +2,8 @@ const PATH_FILE = './talker.json';
 const express = require('express');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
+const fs = require('fs').promises;
+
 const { readContentFile, writeContentFile } = require('./utils');
 // Validações:
 const { isValidEmail } = require('./middlewares/isValidEmail');
@@ -109,11 +111,12 @@ app.delete(
     const { id } = req.params;
     const talkers = await readContentFile(PATH_FILE);
     const forDelete = talkers.findIndex((index) => index.id === Number(id));
-  
-    talkers.splice(forDelete, 1);
-    await writeContentFile(PATH_FILE);
-    return res.status(204).end();
     // console.log(forDelete);
+
+    // Referência: ajuda de Erik Lima para reescrever o arquivo com o dado deletado;
+    talkers.splice(forDelete, 1);
+    fs.writeFile(PATH_FILE, JSON.stringify(forDelete));    
+    return res.status(204).end();
   },
 );
 
